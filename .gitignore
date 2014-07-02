@@ -1,0 +1,12 @@
+# Eclipse/Aptana Studio stuff
+/.project
+/.pydevproject
+/.settings/
+
+# Python stuff
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual environment
+/venv/
