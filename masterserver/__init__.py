@@ -2,6 +2,7 @@
 
 from twisted.application import internet, service
 from masterserver.sauerfork.sauerbraten import SauerbratenStyleFactory
+from masterserver.sauerfork.http import httpsite
 from twisted.internet import reactor
 from twisted.python import log
 import logging
@@ -32,13 +33,17 @@ def configure_logging(filename=None, loglevel=logging.INFO):
 def get_reactor():
     configure_logging(loglevel=logging.DEBUG)
     reactor.listenTCP(28787, SauerbratenStyleFactory())
+    reactor.listenTCP(28788, httpsite)
     return reactor
 
 
 def get_application():
     configure_logging(filename="server.log")
     application = service.Application("masterserver")
+
     internet.TCPServer(
         28787, SauerbratenStyleFactory()
     ).setServiceParent(application)
+    internet.TCPServer(28788, httpsite).setServiceParent(application)
+
     return application
