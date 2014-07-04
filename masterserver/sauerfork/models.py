@@ -17,15 +17,15 @@ class Server(object):
         self.proxied = proxied
 
     @classmethod
-    def getlist(self):
-        return list(self.__serverlist)
+    def getlist(cls):
+        return list(cls.__serverlist)
 
     @classmethod
-    def setlist(self, serverlist):
+    def setlist(cls, serverlist):
         for i in serverlist:
             if not isinstance(i, Server):
                 raise ValueError("You have non-Server objects in the list!")
-        self.__serverlist = serverlist
+        cls.__serverlist = serverlist
 
     @classmethod
     def register(cls, ip, port, proxied=False):
@@ -39,12 +39,18 @@ class Server(object):
         self.__serverlist.remove(self)
 
     @classmethod
-    def search(cls, ip, port=None, silent=False):
-        servers = []
+    def search(cls, ip=None, port=None, proxied=None, silent=False):
+        if proxied is not None:
+            servers = [i for i in cls.getlist() if i.proxied == bool(proxied)]
+        else:
+            servers = cls.getlist()
 
-        for server in cls.__serverlist:
-            if ip == server.ip:
-                servers.append(server)
+        if ip is not None:
+            oldlist = servers
+            servers = []
+            for server in servers:
+                if ip == server.ip:
+                    servers.append(server)
 
         if port is not None:
             for server in servers:
@@ -56,6 +62,12 @@ class Server(object):
 
         if not silent:
             raise ServerNotFoundError("Requested server is not registered")
+
+        else:
+            if port is not None:
+                return None
+            else:
+                return []
 
     def __eq__(self, other):
         return isinstance(other, Server) and \
